@@ -1,21 +1,32 @@
 import { NavigationContainer } from "@react-navigation/native";
-
 import AuthStack from "./stacks/AuthStack";
 import TabNavigator from "./TabNavigator";
-
 import SplashScreen from "../featuers/auth/screens/SplashScreen";
-
-const isAuth = false;
-const isLoading = true; // example flag for splash
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { restoreUser } from "../featuers/auth/authThunks";
 
 const AppNavigator = () => {
-  // if (isLoading) {
-  //   return <SplashScreen />;
-  // }
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      await dispatch(restoreUser());
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000); 
+      return () => clearTimeout(timer); 
+    };
+    init();
+  }, [dispatch]);
+
+  if (isLoading) return <SplashScreen />;
 
   return (
     <NavigationContainer>
-      {isAuth ? <TabNavigator /> : <AuthStack />}
+      {user?.token ? <TabNavigator /> : <AuthStack />}
     </NavigationContainer>
   );
 };

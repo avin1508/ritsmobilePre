@@ -26,12 +26,15 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    const requestUrl = error.config?.url;
     if (error.response?.status === 401) {
+     if (requestUrl?.includes("/auth/login")) {
+        return Promise.reject(error);
+      }
       Toast.show({
         type: "error",
         text1: "Session Expired",
       });
-      // 🔹 Dispatch by action type string to avoid circular import
       storeRef?.dispatch({ type: "auth/logOutUser" });
     }
     return Promise.reject(error);

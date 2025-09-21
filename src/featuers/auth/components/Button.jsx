@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Platform,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "../../../constants/Colors";
@@ -16,12 +17,12 @@ const { width, height } = Dimensions.get("window");
 const scale = (size) => (width / 375) * size; // 375 is base iPhone width
 const verticalScale = (size) => (height / 812) * size; // 812 is base iPhone height
 
-const Button = ({ text, onPress, style, textStyle }) => {
+const Button = ({ text, onPress, loading }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={onPress}
-      style={[styles.buttonWrapper, style]}
+      style={styles.buttonWrapper}
     >
       <LinearGradient
         colors={[Colors.darkBlue, Colors.blue]}
@@ -29,7 +30,11 @@ const Button = ({ text, onPress, style, textStyle }) => {
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        <Text style={[styles.text, textStyle]}>{text}</Text>
+        {loading ? (
+          <ActivityIndicator color={Colors.white} />
+        ) : (
+          <Text style={styles.text}>{text}</Text>
+        )}
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -39,13 +44,14 @@ export default Button;
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    width: "90%", 
+    width: "90%",
     borderRadius: scale(20),
     overflow: "hidden",
     marginVertical: verticalScale(10),
   },
   gradient: {
-    paddingVertical: Platform.OS === "ios" ? verticalScale(10) : verticalScale(10),
+    paddingVertical:
+      Platform.OS === "ios" ? verticalScale(10) : verticalScale(10),
     paddingHorizontal: scale(15),
     borderRadius: scale(12),
     justifyContent: "center",

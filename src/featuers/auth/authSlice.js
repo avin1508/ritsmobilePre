@@ -1,10 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser } from "./authThunks";
+import { loginUser, restoreUser } from "./authThunks";
 import localStorage from "../../utils/localStorage";
 
 const initialState = {
-  user: null,
-  token: null,
+  user: null,   
   loading: false,
   error: null,
 };
@@ -15,7 +14,6 @@ const authSlice = createSlice({
   reducers: {
     logOutUser: (state) => {
       state.user = null;
-      state.token = null;
       localStorage.clear();
     },
   },
@@ -27,12 +25,17 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.user = action.payload;  
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(restoreUser.fulfilled, (state, action) => {
+        state.user = action.payload; 
+      })
+      .addCase(restoreUser.rejected, (state) => {
+        state.user = null;
       });
   },
 });

@@ -18,6 +18,9 @@ import { Ionicons } from "@expo/vector-icons";
 import Button from "../components/Button";
 import Colors from "../../../constants/Colors";
 import { showSuccessToast, showErrorToast, showInfoToast } from "../../../utils/toast";
+import { loginUser } from "../authThunks";
+import { useSelector, useDispatch } from "react-redux";
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -28,6 +31,7 @@ const moderateScale = (size, factor = 0.5) =>
   size + (scale(size) - size) * factor;
 
 const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +39,9 @@ const LoginScreen = ({ navigation }) => {
   const scrollViewRef = useRef(null);
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
+
+  // Selecting the loading state from the store
+  const { loading } = useSelector((state) => state.auth);
 
   const validateForm = () => {
     const newErrors = {};
@@ -48,12 +55,18 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = () => {
     Keyboard.dismiss();
-    // if (validateForm()) {
-    //   console.log("Login pressed with:", { email, password });
-     
-    // }
-    showSuccessToast("Login successful ✅")
+    if (validateForm()) {
+      dispatch(loginUser({ email, password }))
+        .unwrap()
+        .then(() => {
+          showSuccessToast("Login successful ✅");
+        })
+        .catch((error) => {
+          showErrorToast(error.error || "Login failed");
+        });
+    }
   };
+
 
   // Auto clear errors after 3s
   useEffect(() => {
@@ -67,7 +80,7 @@ const LoginScreen = ({ navigation }) => {
     nextField.current.focus();
   };
 
-  // redirecting to register page
+  // Redirecting to register page
   const navigateToRegister = () => {
     navigation.navigate("RegisterScreen");
   }
@@ -171,7 +184,7 @@ const LoginScreen = ({ navigation }) => {
 
               {/* Login Button */}
               <View style={styles.buttonContainer}>
-                <Button text="Login" onPress={handleLogin} />
+                <Button text="Login" onPress={handleLogin} loading={loading}/>
               </View>
 
               {/* Footer */}
