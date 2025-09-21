@@ -9,9 +9,9 @@ const isAuth = false;
 const isLoading = true; // example flag for splash
 
 const AppNavigator = () => {
-  if (isLoading) {
-    return <SplashScreen />;
-  }
+  // if (isLoading) {
+  //   return <SplashScreen />;
+  // }
 
   return (
     <NavigationContainer>

@@ -1,5 +1,3 @@
-// colors.js
-
 const Colors = {
   primary: "#172133",
   secondary: "#25B6D2",
@@ -10,6 +8,8 @@ const Colors = {
   cyan: "#3CCBE6",
   green: "#5CD500",
   danger: "#FF2525",
+  gray: "#ddd",
+  lightBackground: "#E7ECF3",
 };
 
-export default Colors;
+export default Colors;            

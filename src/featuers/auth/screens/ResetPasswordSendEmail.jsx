@@ -14,7 +14,6 @@ import {
   Pressable,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 import Button from "../components/Button";
 import Colors from "../../../constants/Colors";
 
@@ -26,38 +25,36 @@ const verticalScale = (size) => (height / 812) * size;
 const moderateScale = (size, factor = 0.5) =>
   size + (scale(size) - size) * factor;
 
-const ResetPasswordScreen = ({ navigation }) => {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+const ResetPasswordSendEmail = ({ navigation }) => {
+  const [email, setEmail] = useState("");
   const [errors, setErrors] = useState({});
-  const [securePassword, setSecurePassword] = useState(true);
-  const [secureConfirm, setSecureConfirm] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const passwordInputRef = useRef(null);
-  const confirmPasswordInputRef = useRef(null);
+  const emailInputRef = useRef(null);
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!password.trim()) newErrors.password = "Password is required";
-    else if (password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
-
-    if (!confirmPassword.trim())
-      newErrors.confirmPassword = "Confirm Password is required";
-    else if (password !== confirmPassword)
-      newErrors.confirmPassword = "Passwords do not match";
+    if (!email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email))
+      newErrors.email = "Email is invalid";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleResetPassword = () => {
+  const handleSendOTP = () => {
     Keyboard.dismiss();
-    if (validateForm()) {
-      console.log("Password reset successfully!");
-      navigation.navigate("LoginScreen"); 
-    }
+    // if (validateForm()) {
+    //   console.log("OTP sent to:", email);
+    //   setIsSubmitted(true);
+     
+    // }
+    navigation.navigate("VerifyOtpScreen");
+  };
+
+  const navigateToLogin = () => {
+    navigation.goBack();
   };
 
   useEffect(() => {
@@ -83,7 +80,7 @@ const ResetPasswordScreen = ({ navigation }) => {
             keyboardShouldPersistTaps="handled"
             bounces={false}
           >
-            {/* Header */}
+        
             <View style={styles.header}>
               <LinearGradient
                 colors={[Colors.blue, Colors.darkBlue]}
@@ -96,103 +93,53 @@ const ResetPasswordScreen = ({ navigation }) => {
               <View style={styles.smallCircle4} />
               <View style={styles.smallCircle5} />
 
-              <Text style={styles.title}>Set New{"\n"}Password</Text>
+              <Text style={styles.title}>
+                Password{"\n"}Reset
+              </Text>
             </View>
 
             {/* Form */}
             <View style={styles.formContainer}>
-              {/* Password */}
+              {/* Email */}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>New Password</Text>
-                <View style={styles.passwordRow}>
-                  <TextInput
-                    ref={passwordInputRef}
-                    placeholder="Enter new password"
-                    secureTextEntry={securePassword}
-                    style={[
-                      styles.input,
-                      errors.password && { borderBottomColor: Colors.red },
-                    ]}
-                    autoCapitalize="none"
-                    textContentType="password"
-                    returnKeyType="next"
-                    value={password}
-                    onChangeText={setPassword}
-                    onSubmitEditing={() =>
-                      confirmPasswordInputRef.current?.focus()
-                    }
-                    placeholderTextColor="#999"
-                  />
-                  <Pressable
-                    onPress={() => setSecurePassword(!securePassword)}
-                    style={styles.iconWrapper}
-                  >
-                    <Ionicons
-                      name={securePassword ? "eye-off" : "eye"}
-                      size={22}
-                      color={Colors.gray}
-                    />
-                  </Pressable>
-                </View>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  ref={emailInputRef}
+                  placeholder="Enter your email"
+                  style={[
+                    styles.input,
+                    errors.email && { borderBottomColor: Colors.red },
+                  ]}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  textContentType="emailAddress"
+                  returnKeyType="done"
+                  value={email}
+                  onChangeText={setEmail}
+                  onSubmitEditing={handleSendOTP}
+                  placeholderTextColor="#999"
+                />
                 <View style={styles.errorWrapper}>
-                  {errors.password && (
-                    <Text style={styles.errorText}>{errors.password}</Text>
+                  {errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
                   )}
                 </View>
               </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Confirm Password</Text>
-                <View style={styles.passwordRow}>
-                  <TextInput
-                    ref={confirmPasswordInputRef}
-                    placeholder="Confirm new password"
-                    secureTextEntry={secureConfirm}
-                    style={[
-                      styles.input,
-                      errors.confirmPassword && {
-                        borderBottomColor: Colors.red,
-                      },
-                    ]}
-                    autoCapitalize="none"
-                    textContentType="password"
-                    returnKeyType="done"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    onSubmitEditing={handleResetPassword}
-                    placeholderTextColor="#999"
-                  />
-                  <Pressable
-                    onPress={() => setSecureConfirm(!secureConfirm)}
-                    style={styles.iconWrapper}
-                  >
-                    <Ionicons
-                      name={secureConfirm ? "eye-off" : "eye"}
-                      size={22}
-                      color={Colors.gray}
-                    />
-                  </Pressable>
-                </View>
-                <View style={styles.errorWrapper}>
-                  {errors.confirmPassword && (
-                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                  )}
-                </View>
-              </View>
-
-              {/* Reset Button */}
+              {/* Send OTP Button */}
               <View style={styles.buttonContainer}>
-                <Button text="Reset Password" onPress={handleResetPassword} />
+                <Button text="Send OTP" onPress={handleSendOTP} />
               </View>
 
               {/* Footer */}
               <View style={styles.footer}>
                 <View style={styles.footerRow}>
                   <Text style={styles.footerText}>
-                    Go back to{" "}
+                    Remember your password?{" "}
                   </Text>
-                  <Pressable onPress={() => navigation.navigate("LoginScreen")}>
-                    <Text style={styles.loginText}>Login</Text>
+                  <Pressable onPress={navigateToLogin}>
+                    <Text style={styles.loginText}>Login here</Text>
                   </Pressable>
                 </View>
               </View>
@@ -204,7 +151,7 @@ const ResetPasswordScreen = ({ navigation }) => {
   );
 };
 
-export default ResetPasswordScreen;
+export default ResetPasswordSendEmail;
 
 const styles = StyleSheet.create({
   container: {
@@ -243,7 +190,7 @@ const styles = StyleSheet.create({
     right: -verticalScale(80),
     opacity: 0.9,
   },
-    smallCircle1: {
+  smallCircle1: {
     position: "absolute",
     width: verticalScale(50),
     height: verticalScale(50),
@@ -293,7 +240,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: "center",
     paddingHorizontal: scale(25),
-    marginTop: verticalScale(80),
+    marginTop: verticalScale(100),
   },
   inputContainer: {
     marginBottom: verticalScale(30),
@@ -304,22 +251,13 @@ const styles = StyleSheet.create({
     color: Colors.darkBlue,
     marginBottom: verticalScale(8),
   },
-  passwordRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   input: {
-    flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: Colors.gray,
     paddingVertical: verticalScale(12),
     fontSize: moderateScale(16),
     color: Colors.darkBlue,
     paddingHorizontal: 0,
-  },
-  iconWrapper: {
-    marginLeft: scale(10),
-    padding: scale(5),
   },
   errorWrapper: {
     minHeight: verticalScale(18),

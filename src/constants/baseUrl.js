@@ -1,0 +1,1 @@
+export const BASE_URL = "https://ritsbillingsuite-dhdsc9e9c0c9exe3.centralindia-01.azurewebsites.net/api"
